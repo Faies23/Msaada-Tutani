@@ -1,0 +1,107 @@
+name,kind,level,ownership,region,district
+Muhimbili National Hospital,health,national_hospital,government,Dar es Salaam,Ilala
+Jakaya Kikwete Cardiac Institute,health,national_hospital,government,Dar es Salaam,Ilala
+Ocean Road Cancer Institute,health,national_hospital,government,Dar es Salaam,Ilala
+Muhimbili Orthopaedic Institute (MOI),health,national_hospital,government,Dar es Salaam,Ilala
+Mirembe National Mental Health Hospital,health,national_hospital,government,Dodoma,Dodoma City
+Kibong'oto Infectious Diseases Hospital,health,national_hospital,government,Kilimanjaro,Siha
+Benjamin Mkapa Hospital,health,zonal_referral,government,Dodoma,Dodoma City
+Bugando Medical Centre,health,zonal_referral,faith,Mwanza,Ilemela
+Kilimanjaro Christian Medical Centre (KCMC),health,zonal_referral,faith,Kilimanjaro,Moshi Municipal
+Mbeya Zonal Referral Hospital,health,zonal_referral,government,Mbeya,Mbeya City
+Southern Zonal Referral Hospital,health,zonal_referral,government,Mtwara,Mtwara Municipal
+Chato Zonal Referral Hospital,health,zonal_referral,government,Geita,Chato
+Amana Regional Referral Hospital,health,regional_referral,government,Dar es Salaam,Ilala
+Mwananyamala Regional Referral Hospital,health,regional_referral,government,Dar es Salaam,Kinondoni
+Temeke Regional Referral Hospital,health,regional_referral,government,Dar es Salaam,Temeke
+Mount Meru Regional Referral Hospital,health,regional_referral,government,Arusha,Arusha City
+Dodoma Regional Referral Hospital,health,regional_referral,government,Dodoma,Dodoma City
+Morogoro Regional Referral Hospital,health,regional_referral,government,Morogoro,Morogoro Municipal
+Bombo Regional Referral Hospital,health,regional_referral,government,Tanga,Tanga City
+Mawenzi Regional Referral Hospital,health,regional_referral,government,Kilimanjaro,Moshi Municipal
+Sekou Toure Regional Referral Hospital,health,regional_referral,government,Mwanza,Nyamagana
+Iringa Regional Referral Hospital,health,regional_referral,government,Iringa,Iringa Municipal
+Sokoine Regional Referral Hospital,health,regional_referral,government,Lindi,Lindi Municipal
+Ligula Regional Referral Hospital,health,regional_referral,government,Mtwara,Mtwara Municipal
+Kitete Regional Referral Hospital,health,regional_referral,government,Tabora,Tabora Municipal
+Maweni Regional Referral Hospital,health,regional_referral,government,Kigoma,Kigoma Municipal
+Bukoba Regional Referral Hospital,health,regional_referral,government,Kagera,Bukoba Municipal
+Mara Regional Referral Hospital,health,regional_referral,government,Mara,Musoma Municipal
+Shinyanga Regional Referral Hospital,health,regional_referral,government,Shinyanga,Shinyanga Municipal
+Singida Regional Referral Hospital,health,regional_referral,government,Singida,Singida Municipal
+Songea Regional Referral Hospital,health,regional_referral,government,Ruvuma,Songea Municipal
+Sumbawanga Regional Referral Hospital,health,regional_referral,government,Rukwa,Sumbawanga Municipal
+Kibena Regional Referral Hospital,health,regional_referral,government,Njombe,Njombe Town
+Katavi Regional Referral Hospital,health,regional_referral,government,Katavi,Mpanda Municipal
+Geita Regional Referral Hospital,health,regional_referral,government,Geita,Geita Town
+Simiyu Regional Referral Hospital,health,regional_referral,government,Simiyu,Bariadi
+Songwe Regional Referral Hospital,health,regional_referral,government,Songwe,Mbozi
+Manyara Regional Referral Hospital,health,regional_referral,government,Manyara,Babati Town
+Tumbi Regional Referral Hospital,health,regional_referral,government,Pwani,Kibaha Town
+Mbeya Regional Referral Hospital,health,regional_referral,government,Mbeya,Mbeya City
+Mnazi Mmoja Hospital,health,regional_referral,government,Mjini Magharibi,Mjini
+Haydom Lutheran Hospital,health,district_hospital,faith,Manyara,Mbulu
+St. Francis Referral Hospital Ifakara,health,district_hospital,faith,Morogoro,Kilombero
+Aga Khan Hospital Dar es Salaam,health,district_hospital,private,Dar es Salaam,Ilala
+University of Dar es Salaam,school,college,government,Dar es Salaam,Ubungo
+Muhimbili University of Health and Allied Sciences,school,college,government,Dar es Salaam,Ilala
+Sokoine University of Agriculture,school,college,government,Morogoro,Morogoro Municipal
+University of Dodoma,school,college,government,Dodoma,Dodoma City
+Ardhi University,school,college,government,Dar es Salaam,Ubungo
+Mzumbe University,school,college,government,Morogoro,Mvomero
+Open University of Tanzania,school,college,government,Dar es Salaam,Kinondoni
+Nelson Mandela African Institution of Science and Technology,school,college,government,Arusha,Arusha
+Moshi Co-operative University,school,college,government,Kilimanjaro,Moshi Municipal
+Mbeya University of Science and Technology,school,college,government,Mbeya,Mbeya City
+State University of Zanzibar,school,college,government,Mjini Magharibi,Mjini
+Mwalimu Julius K. Nyerere University of Agriculture and Technology,school,college,government,Mara,Butiama
+Dar es Salaam University College of Education,school,college,government,Dar es Salaam,Ilala
+Mkwawa University College of Education,school,college,government,Iringa,Iringa Municipal
+Hubert Kairuki Memorial University,school,college,private,Dar es Salaam,Kinondoni
+St. Augustine University of Tanzania,school,college,faith,Mwanza,Nyamagana
+Tumaini University Makumira,school,college,faith,Arusha,Arumeru
+Kilimanjaro Christian Medical University College,school,college,faith,Kilimanjaro,Moshi Municipal
+Catholic University of Health and Allied Sciences,school,college,faith,Mwanza,Ilemela
+University of Iringa,school,college,faith,Iringa,Iringa Municipal
+Ruaha Catholic University,school,college,faith,Iringa,Iringa Municipal
+St. John's University of Tanzania,school,college,faith,Dodoma,Dodoma City
+Muslim University of Morogoro,school,college,faith,Morogoro,Morogoro Municipal
+Zanzibar University,school,college,private,Mjini Magharibi,Mjini
+Mount Meru University,school,college,faith,Arusha,Arusha City
+Teofilo Kisanji University,school,college,faith,Mbeya,Mbeya City
+International Medical and Technological University,school,college,private,Dar es Salaam,Kinondoni
+University of Arusha,school,college,faith,Arusha,Arumeru
+Aga Khan University Tanzania,school,college,private,Dar es Salaam,Ilala
+St. Joseph University in Tanzania,school,college,faith,Dar es Salaam,Ubungo
+Jordan University College,school,college,faith,Morogoro,Morogoro Municipal
+Stefano Moshi Memorial University College,school,college,faith,Kilimanjaro,Moshi Municipal
+Mwenge Catholic University,school,college,faith,Kilimanjaro,Moshi Municipal
+Abdulrahman Al-Sumait University,school,college,private,Mjini Magharibi,Magharibi B
+Institute of Finance Management,school,college,government,Dar es Salaam,Ilala
+College of Business Education,school,college,government,Dar es Salaam,Ilala
+Dar es Salaam Institute of Technology,school,college,government,Dar es Salaam,Ilala
+Arusha Technical College,school,college,government,Arusha,Arusha City
+National Institute of Transport,school,college,government,Dar es Salaam,Ubungo
+Institute of Accountancy Arusha,school,college,government,Arusha,Arusha City
+Tanzania Institute of Accountancy,school,college,government,Dar es Salaam,Temeke
+Institute of Rural Development Planning,school,college,government,Dodoma,Dodoma City
+Mzumbe Secondary School,school,secondary,government,Morogoro,Mvomero
+Ilboru Secondary School,school,secondary,government,Arusha,Arusha
+Kibaha Secondary School,school,secondary,government,Pwani,Kibaha Town
+Tabora Boys Secondary School,school,secondary,government,Tabora,Tabora Municipal
+Tabora Girls Secondary School,school,secondary,government,Tabora,Tabora Municipal
+Pugu Secondary School,school,secondary,government,Dar es Salaam,Ilala
+Azania Secondary School,school,secondary,government,Dar es Salaam,Ilala
+Jangwani Girls Secondary School,school,secondary,government,Dar es Salaam,Ilala
+Kilakala Secondary School,school,secondary,government,Morogoro,Morogoro Municipal
+Msalato Girls Secondary School,school,secondary,government,Dodoma,Dodoma City
+Mkwawa Secondary School,school,secondary,government,Iringa,Iringa Municipal
+Malangali Secondary School,school,secondary,government,Iringa,Mufindi
+Tanga Technical Secondary School,school,secondary,government,Tanga,Tanga City
+Ifunda Technical Secondary School,school,secondary,government,Iringa,Iringa
+Moshi Technical Secondary School,school,secondary,government,Kilimanjaro,Moshi Municipal
+Old Moshi Secondary School,school,secondary,government,Kilimanjaro,Moshi
+Kisimiri Secondary School,school,secondary,government,Arusha,Arumeru
+Feza Boys Secondary School,school,secondary,private,Dar es Salaam,Kinondoni
+Marian Girls Secondary School,school,secondary,faith,Pwani,Bagamoyo
+St. Francis Girls Secondary School Mbeya,school,secondary,faith,Mbeya,Mbeya City

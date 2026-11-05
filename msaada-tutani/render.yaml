@@ -1,0 +1,36 @@
+# Render Blueprint: New > Blueprint > pick the Msaada-Tutani repository.
+# The database is Postgres from Supabase (or any Postgres); paste its connection string when asked.
+services:
+  - type: web
+    name: msaada-tutani
+    runtime: node
+    plan: starter
+    buildCommand: npm ci
+    # Migrations are safe to re-run: they create missing tables, the admin and the starter catalogue.
+    startCommand: npm run start:prod
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: APP_URL
+        value: https://www.msaadatutani.com
+      - key: CANONICAL_HOST
+        value: www.msaadatutani.com
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: MAIL_FROM
+        value: "Msaada Tutani <no-reply@msaadatutani.com>"
