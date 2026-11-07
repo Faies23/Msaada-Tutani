@@ -33,8 +33,8 @@ router.post('/donor/signup', limiter, v.h(async (req, res) => {
   try {
     const { rows } = await query(
       `insert into users (role, email, password_hash, alias, hide_from_board, donor_type, full_name,
-                          org_name, org_type, org_reg_no, phone, region)
-       values ('donor', $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) returning id, role`,
+                          org_name, org_type, org_reg_no, phone, region, last_login_at)
+       values ('donor', $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, now()) returning id, role`,
       [email, hash, alias, hide, type, fullName, orgName, orgType, orgReg, phone, region]);
     res.status(201).json({ token: signToken(rows[0]), role: 'donor' });
   } catch (e) {
@@ -71,7 +71,7 @@ router.post('/institution/signup', limiter, v.h(async (req, res) => {
   try {
     const out = await tx(async (c) => {
       const u = await c.query(
-        `insert into users (role, email, phone, password_hash) values ('institution', $1, $2, $3) returning id, role`,
+        `insert into users (role, email, phone, password_hash, last_login_at) values ('institution', $1, $2, $3, now()) returning id, role`,
         [email, data.phone, hash]);
       const ins = await c.query(
         `insert into institutions (user_id, name, kind, reg_no, region, district, ownership, level,
@@ -98,6 +98,7 @@ router.post('/login', limiter, v.h(async (req, res) => {
   const { rows } = await query('select id, role, password_hash from users where email = $1', [email]);
   const ok = rows[0] && await verifyPassword(String(b.password || ''), rows[0].password_hash);
   if (!ok) throw new v.HttpError(401, 'bad_login');
+  await query('update users set last_login_at = now() where id = $1', [rows[0].id]);
   res.json({ token: signToken(rows[0]), role: rows[0].role });
 }));
 

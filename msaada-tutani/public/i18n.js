@@ -1,6 +1,12 @@
 /* English and Kiswahili copy. Keys are shared; add a key to both languages. */
 window.I18N = {
   en: {
+    admin_dash: 'Admin dashboard',
+    ov_tab: 'Overview', ov_donors: 'Donors', ov_total: 'All donors', ov_new30: 'new in 30 days',
+    ov_active: 'Active', ov_active_sub: 'gave or signed in, last 30 days', ov_dormant: 'Dormant', ov_dormant_sub: 'no activity for 90+ days',
+    ov_never: 'Not given yet', ov_never_sub: 'registered, no confirmed gift', ov_review: 'Review now',
+    ov_bills_money: 'Bills and money', this_month: 'This month', ov_money_month: 'Money confirmed per month (TSh)',
+    ov_signups: 'New sign-ups per week', ov_table: 'Show as table',
     motto: 'Sadaka yenye kuishi · The living charity',
     dtype_individual: 'Individual', dtype_org: 'Organisation', dtype_hint: 'Companies, NGOs, churches and mosques, groups of friends or colleagues.',
     full_name: 'Full name (private)', full_name_hint: 'Only used on your receipts. Never shown publicly.',
@@ -187,6 +193,12 @@ window.I18N = {
   },
 
   sw: {
+    admin_dash: 'Dashibodi ya msimamizi',
+    ov_tab: 'Muhtasari', ov_donors: 'Wachangiaji', ov_total: 'Wachangiaji wote', ov_new30: 'wapya ndani ya siku 30',
+    ov_active: 'Hai', ov_active_sub: 'walichangia au kuingia, siku 30', ov_dormant: 'Wamelala', ov_dormant_sub: 'hakuna shughuli siku 90+',
+    ov_never: 'Hawajachangia', ov_never_sub: 'wamesajiliwa, hakuna mchango uliothibitishwa', ov_review: 'Kagua sasa',
+    ov_bills_money: 'Bili na fedha', this_month: 'Mwezi huu', ov_money_month: 'Fedha zilizothibitishwa kwa mwezi (TSh)',
+    ov_signups: 'Usajili mpya kwa wiki', ov_table: 'Onyesha kama jedwali',
     motto: 'Sadaka yenye kuishi',
     dtype_individual: 'Mtu binafsi', dtype_org: 'Taasisi au kikundi', dtype_hint: 'Kampuni, NGO, makanisa na misikiti, vikundi vya marafiki au wafanyakazi.',
     full_name: 'Jina kamili (siri)', full_name_hint: 'Linatumika kwenye risiti zako tu. Halionyeshwi hadharani.',

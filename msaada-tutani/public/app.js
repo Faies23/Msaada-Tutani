@@ -161,7 +161,7 @@
     $('#lang').textContent = S.lang === 'sw' ? 'EN' : 'SW';
     const items = [['#/live', 'nav_live'], ['#/bills', 'nav_bills'], ['#/board', 'nav_board'], ['#/track', 'nav_track']];
     paint($('#nav'), html`${items.map(([h, k]) => html`<a href="${h}" ${('#' + path).startsWith(h) ? raw('aria-current="page"') : ''}>${h === '#/live' ? raw('<span class="live-dot"></span>') : ''}${t(k)}</a>`)}
-      ${S.me ? '' : html`<a class="m-only" href="#/login">${t('sign_in')}</a>`}`);
+      ${S.me ? html`<a class="m-only" href="#/" data-act="logout">${t('sign_out')}</a>` : html`<a class="m-only" href="#/login">${t('sign_in')}</a>`}`);
     const acct = $('#account');
     if (S.me) {
       const label = S.me.role === 'donor' ? t('my_giving') : S.me.role === 'admin' ? t('admin') : t('dashboard');
@@ -1079,14 +1079,88 @@
   };
 
   // ---------- Admin ----------
+  // Admin section: Overview (numbers and charts) and Institutions (verification queue).
+  const adminTabs = (cur, pending) => html`<nav class="tabs">
+    <a href="#/admin" ${cur === 'overview' ? raw('aria-current="page"') : ''}>${t('ov_tab')}</a>
+    <a href="#/admin/institutions" ${cur === 'institutions' ? raw('aria-current="page"') : ''}>${t('institutions')}${pending ? html`<span class="badge">${pending}</span>` : ''}</a></nav>`;
+
+  // Grouped bar chart in SVG. series: [{ name, cls, values }]. One axis, recessive grid,
+  // hover tooltip per column, legend for 2+ series, and a table view underneath.
+  function niceMax(v) {
+    if (v <= 0) return 4;
+    const p = Math.pow(10, Math.floor(Math.log10(v)));
+    const n = v / p;
+    const step = n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10;
+    return step * p;
+  }
+  function barChart({ id, labels, series, fmt, title, integer }) {
+    const W = 640, H = 220, L = 56, R = 8, T = 10, B = 28;
+    const peak = Math.max(0, ...series.flatMap((x) => x.values));
+    const step = integer ? Math.max(1, Math.ceil(peak / 4)) : niceMax(peak / 4);
+    const max = step * 4;
+    const pw = W - L - R, ph = H - T - B;
+    const slot = pw / labels.length, gap = 2;
+    const bw = Math.max(3, Math.min(28, (slot * 0.7 - gap * (series.length - 1)) / series.length));
+    const y = (v) => T + ph - (v / max) * ph;
+    const ticks = [0, 1, 2, 3, 4].map((k) => step * k);
+    const every = labels.length > 8 ? 2 : 1;
+    let svg = '';
+    ticks.forEach((tv) => {
+      svg += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(tv)}" y2="${y(tv)}"/>`;
+      svg += `<text class="ax" x="${L - 8}" y="${y(tv) + 4}" text-anchor="end">${esc(fmt(tv, true))}</text>`;
+    });
+    labels.forEach((lab, i) => {
+      const x0 = L + i * slot + (slot - (bw * series.length + gap * (series.length - 1))) / 2;
+      series.forEach((sr, k) => {
+        const v = sr.values[i]; const top = y(v); const h = T + ph - top;
+        if (h > 0) {
+          const x = x0 + k * (bw + gap); const r = Math.min(4, bw / 2, h);
+          svg += `<path class="bar ${sr.cls}" d="M${x},${T + ph} V${top + r} Q${x},${top} ${x + r},${top} H${x + bw - r} Q${x + bw},${top} ${x + bw},${top + r} V${T + ph} Z"/>`;
+        }
+      });
+      if (i % every === 0 || i === labels.length - 1) svg += `<text class="ax" x="${L + i * slot + slot / 2}" y="${H - 8}" text-anchor="middle">${esc(lab)}</text>`;
+      svg += `<rect class="hit" data-i="${i}" x="${L + i * slot}" y="${T}" width="${slot}" height="${ph}"/>`;
+    });
+    svg += `<line class="base" x1="${L}" x2="${W - R}" y1="${T + ph}" y2="${T + ph}"/>`;
+    const legend = series.length > 1 ? html`<div class="legend">${series.map((sr) => html`<span><i class="sw ${sr.cls}"></i>${sr.name}</span>`)}</div>` : '';
+    return html`<figure class="chart" id="${id}" data-chart="${JSON.stringify({ labels, series: series.map((sr) => ({ name: sr.name, cls: sr.cls, values: sr.values.map((v) => fmt(v)) })) })}">
+      <figcaption class="label">${title}</figcaption>${legend}
+      <div class="plot"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${title}">${raw(svg)}</svg><div class="tip" hidden></div></div>
+      <details class="sp-sm"><summary class="small muted">${t('ov_table')}</summary><div class="scroll-x"><table class="table"><thead><tr><th></th>${series.map((sr) => html`<th class="r">${sr.name}</th>`)}</tr></thead>
+        <tbody>${labels.map((lab, i) => html`<tr><td>${lab}</td>${series.map((sr) => html`<td class="r num">${fmt(sr.values[i])}</td>`)}</tr>`)}</tbody></table></div></details>
+    </figure>`;
+  }
+  function wireCharts(root) {
+    $$('figure.chart', root).forEach((fig) => {
+      const data = JSON.parse(fig.getAttribute('data-chart'));
+      const tip = $('.tip', fig); const plot = $('.plot', fig);
+      const show = (e) => {
+        const r = e.target.closest('.hit'); if (!r) return;
+        const i = Number(r.dataset.i);
+        paint(tip, html`<b>${data.labels[i]}</b>${data.series.map((sr) => html`<span><i class="sw ${sr.cls}"></i>${sr.name}: <b class="num">${sr.values[i]}</b></span>`)}`);
+        tip.hidden = false;
+        const pr = plot.getBoundingClientRect(), hr = r.getBoundingClientRect();
+        const left = Math.min(Math.max(hr.left - pr.left + hr.width / 2 - tip.offsetWidth / 2, 0), pr.width - tip.offsetWidth);
+        tip.style.left = left + 'px';
+        $$('.hit', fig).forEach((h) => h.classList.toggle('on', h === r));
+      };
+      plot.addEventListener('mousemove', show);
+      plot.addEventListener('click', show);
+      plot.addEventListener('mouseleave', () => { tip.hidden = true; $$('.hit', fig).forEach((h) => h.classList.remove('on')); });
+    });
+  }
+
   views.admin = async function (p, q) {
     if (!S.me || S.me.role !== 'admin') { location.hash = '#/login'; return; }
+    if (p[0] !== 'institutions') return views.adminOverview();
     const st = ['pending', 'verified', 'rejected', 'suspended'].includes(q.status) ? q.status : 'pending';
     const r = await api('/admin/institutions?status=' + st);
     const label = { pending: 'st_pending_i', verified: 'st_verified', rejected: 'st_rejected_i', suspended: 'st_suspended' };
     paint(main, html`
-      <div class="section-head fade"><h2>${t('admin_title')}</h2></div>
-      <nav class="tabs">${Object.keys(label).map((k) => html`<a href="#/admin?status=${k}" ${k === st ? raw('aria-current="page"') : ''}>${t(label[k])}${r.counts[k] ? html`<span class="badge">${r.counts[k]}</span>` : ''}</a>`)}</nav>
+      <div class="section-head fade page-head"><h2>${t('admin_dash')}</h2></div>
+      ${adminTabs('institutions', r.counts.pending)}
+      <div class="seg sp-sm">${Object.keys(label).map((k) => html`<a href="#/admin/institutions?status=${k}" aria-current="${k === st}">${t(label[k])}${r.counts[k] ? ' · ' + r.counts[k] : ''}</a>`)}</div>
+      <div class="sp-md"></div>
       ${r.items.length ? html`<div class="stack">${r.items.map((i) => html`
         <div class="card" data-iid="${i.id}">
           <div class="row between"><div><h3>${i.name}</h3><div class="small muted">${t(i.kind === 'health' ? 'health' : 'school')} · ${lvl(i.level)} · ${own(i.ownership)} · ${i.district}, ${i.region}</div></div>
@@ -1104,6 +1178,73 @@
             </div>
           </div>
         </div>`)}</div>` : html`<div class="empty">${t('nothing_here')}</div>`}`);
+  };
+
+  views.adminOverview = async function () {
+    paint(main, html`<div class="page-head"><h2>${t('admin_dash')}</h2></div>${adminTabs('overview', 0)}${raw('<div class="skel"></div>')}`);
+    const o = await api('/admin/overview');
+    const d = o.donors, ib = o.institutions.by_status, b = o.bills, m = o.money;
+    const tile = (k, v, opts) => html`<div class="ov-tile ${opts && opts.cls ? opts.cls : ''}"><span class="label">${t(k)}</span><span class="v num">${v}</span>${opts && opts.sub ? html`<span class="small muted">${opts.sub}</span>` : ''}</div>`;
+    const pctOf = (a, total) => total ? Math.round((a / total) * 100) + '%' : '0%';
+    const monthLabel = (ym) => { try { return new Date(ym + '-01T00:00:00').toLocaleDateString(locale(), { month: 'short' }); } catch (e) { return ym; } };
+    const weekLabel = (iso) => { try { return new Date(iso + 'T00:00:00').toLocaleDateString(locale(), { day: 'numeric', month: 'short' }); } catch (e) { return iso; } };
+    const short = (v, axis) => {
+      if (!axis) return tzs(v);
+      if (v >= 1e6) return (v / 1e6).toFixed(v % 1e6 ? 1 : 0) + 'M';
+      if (v >= 1e3) return Math.round(v / 1e3) + 'k';
+      return String(Math.round(v));
+    };
+    const maxRegion = Math.max(1, ...o.institutions.by_region.map((r) => Number(r.received_tzs)));
+    paint(main, html`
+      <div class="page-head"><h2>${t('admin_dash')}</h2></div>
+      ${adminTabs('overview', ib.pending)}
+
+      <section class="ov-sec fade">
+        <h3>${t('ov_donors')}</h3>
+        <div class="ov-grid c6">
+          ${tile('ov_total', num(d.total), { sub: html`${num(d.new_30d)} ${t('ov_new30')}` })}
+          ${tile('individuals', num(d.individual), { sub: pctOf(d.individual, d.total) })}
+          ${tile('organisations', num(d.organisation), { sub: pctOf(d.organisation, d.total) })}
+          ${tile('ov_active', num(d.active_30d), { cls: 'good', sub: t('ov_active_sub') })}
+          ${tile('ov_dormant', num(d.dormant_90d), { cls: 'warn', sub: t('ov_dormant_sub') })}
+          ${tile('ov_never', num(d.never_gave), { sub: t('ov_never_sub') })}
+        </div>
+      </section>
+
+      <section class="ov-sec">
+        <h3>${t('institutions')}</h3>
+        <div class="ov-grid c4">
+          <a class="ov-tile warn link" href="#/admin/institutions?status=pending"><span class="label">${t('st_pending_i')}</span><span class="v num">${num(ib.pending)}</span><span class="small muted">${t('ov_review')} →</span></a>
+          ${tile('st_verified', num(ib.verified), { sub: html`${num(o.institutions.verified_by_kind.health)} ${t('health').toLowerCase()} · ${num(o.institutions.verified_by_kind.school)} ${t('school').toLowerCase()}` })}
+          ${tile('st_rejected_i', num(ib.rejected))}
+          ${tile('st_suspended', num(ib.suspended))}
+        </div>
+        ${o.institutions.by_region.length ? html`<div class="card flat sp-sm scroll-x"><table class="table ov-regions">
+          <thead><tr><th>${t('region')}</th><th class="r">${t('st_verified')}</th><th class="r">${t('st_pending_i')}</th><th>${t('k_received')}</th></tr></thead>
+          <tbody>${o.institutions.by_region.map((r) => html`<tr><td>${r.region}</td><td class="r num">${num(r.verified)}</td><td class="r num">${num(r.pending)}</td>
+            <td><div class="ov-bar"><i data-pct="${Math.round((Number(r.received_tzs) / maxRegion) * 100)}"></i></div><span class="num small">${tzs(r.received_tzs)}</span></td></tr>`)}</tbody></table></div>` : ''}
+      </section>
+
+      <section class="ov-sec">
+        <h3>${t('ov_bills_money')}</h3>
+        <div class="ov-grid c6">
+          ${tile('k_open', num(b.open), { sub: html`${tzs(b.open_remaining_tzs)} ${t('remaining')}` })}
+          ${tile('k_cleared', num(b.cleared))}
+          ${tile('closed', num(b.closed))}
+          ${tile('k_pending', num(b.payments_to_confirm), { cls: b.payments_to_confirm ? 'warn' : '' })}
+          ${tile('st_total', tzs(m.total_tzs), { cls: 'good', sub: html`${num(m.gifts)} ${t('gifts')}` })}
+          ${tile('this_month', tzs(m.this_month_tzs))}
+        </div>
+        <div class="ov-charts sp-md">
+          ${barChart({ id: 'ch-money', title: t('ov_money_month'), labels: m.by_month.map((r) => monthLabel(r.month)),
+                       series: [{ name: t('k_received'), cls: 's-money', values: m.by_month.map((r) => Number(r.tzs)) }], fmt: short })}
+          ${barChart({ id: 'ch-signups', title: t('ov_signups'), labels: o.signups.map((r) => weekLabel(r.week)),
+                       series: [{ name: t('givers'), cls: 's-donors', values: o.signups.map((r) => r.donors) },
+                                { name: t('institutions'), cls: 's-inst', values: o.signups.map((r) => r.institutions) }],
+                       fmt: (v) => num(Math.round(v)), integer: true })}
+        </div>
+      </section>`);
+    wireCharts(main);
   };
 
   // ---------- Global click actions ----------
@@ -1171,7 +1312,7 @@
     [/^\/join\/institution$/, views.joinInst],
     [/^\/me$/, views.me],
     [/^\/inst(?:\/(\w+))?$/, views.inst],
-    [/^\/admin$/, views.admin]
+    [/^\/admin(?:\/(\w+))?$/, views.admin]
   ];
   let seq = 0;
   async function route() {
@@ -1199,6 +1340,6 @@
   // hashchange; a real navigation always re-renders.
   window.addEventListener('hashchange', route);
 
-  applyTheme(store.get('tk_theme'));
+  applyTheme(store.get('tk_theme') || 'dark');
   route();
 })();

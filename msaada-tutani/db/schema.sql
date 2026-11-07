@@ -119,3 +119,6 @@ create table if not exists password_resets (
   used_at     timestamptz
 );
 create unique index if not exists institutions_catalogue_uq on institutions (catalogue_id) where catalogue_id is not null;
+
+-- When each account last signed in, so the admin overview can tell active from dormant accounts.
+alter table users add column if not exists last_login_at timestamptz;
