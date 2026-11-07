@@ -49,9 +49,16 @@ app.use('/api', require('./routes/public.routes'));
 app.use('/api', (req, res) => res.status(404).json({ error: 'not_found' }));
 
 const pub = path.join(__dirname, '..', 'public');
-app.use(express.static(pub, { maxAge: '1h' }));
+// Pages, scripts and styles are always re-checked (cheap with ETags), so an update shows up
+// on the next visit instead of an hour later. Fonts and images can be cached for a week.
+app.use(express.static(pub, {
+  setHeaders: (res, file) => {
+    if (/\.(html|js|css)$/.test(file)) res.setHeader('Cache-Control', 'no-cache');
+    else res.setHeader('Cache-Control', 'public, max-age=604800');
+  }
+}));
 // Single-page app: every other path serves the shell.
-app.get('*', (req, res) => res.sendFile(path.join(pub, 'index.html')));
+app.get('*', (req, res) => { res.setHeader('Cache-Control', 'no-cache'); res.sendFile(path.join(pub, 'index.html')); });
 
 app.use((err, req, res, next) => {
   if (err instanceof HttpError) return res.status(err.status).json({ error: err.code });
